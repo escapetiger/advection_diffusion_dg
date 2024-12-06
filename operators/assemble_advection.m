@@ -1,6 +1,6 @@
 function res = assemble_advection(par, dg, x, hx)
 %ASSEMBLE_ADVECTION
-%   Assemble sparse matrices for advection terms.
+%   Detailed explanation goes here
 
 %========================================================================
 % Parse parameters

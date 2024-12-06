@@ -37,6 +37,12 @@ elseif isfield(prob, 'nx')
     end
 end
 
+if isfield(prob, 'nx')
+    if any(prob.nx == 1)
+        error('Reduced grid is not allowed.')
+    end
+end
+
 %========================================================================
 % Adapt problem-specific data to solvers
 %========================================================================

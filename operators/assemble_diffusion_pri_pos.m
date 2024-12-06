@@ -55,23 +55,45 @@ vals(a+i) = repmat(v, nc, 1);
 % Right flux integrals
 a = a + numel(i);
 [r, c, v] = find(FR*h);
-m = multi_index(par.nx);
-m(:, dim) = m(:, dim) + 1;
-i = 1:numel(v) * nc;
-j = m2i(m, par.nx, par.bc(dim));
-rows(a+i) = repmat(r, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(r), 1));
-cols(a+i) = repmat(c, nc, 1) + kron((j - 1)*nl, ones(numel(c), 1));
-vals(a+i) = repmat(v, nc, 1);
-
+if par.bc(dim) == 0 % periodic B.C.
+    m = multi_index(par.nx);
+    m(:, dim) = m(:, dim) + 1;
+    i = 1:numel(v) * nc;
+    j = m2i(m, par.nx, par.bc(dim));
+    rows(a+i) = repmat(r, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(r), 1));
+    cols(a+i) = repmat(c, nc, 1) + kron((j - 1)*nl, ones(numel(c), 1));
+    vals(a+i) = repmat(v, nc, 1);
+else % other B.C.
+    m = multi_index(par.nx);
+    m = m(m(:, dim) < par.nx(dim), :);
+    ni = size(m, 1);
+    i = 1:numel(v) * ni;
+    j = m2i(m, par.nx, 1);
+    rows(a+i) = repmat(r, ni, 1) + kron((j - 1)*nl, ones(numel(r), 1));
+    m(:, dim) = m(:, dim) + 1;
+    j = m2i(m, par.nx, 1);
+    cols(a+i) = repmat(c, ni, 1) + kron((j - 1)*nl, ones(numel(c), 1));
+    vals(a+i) = repmat(v, ni, 1);
+end
 
 % Left flux integrals
 a = a + numel(i);
 [r, c, v] = find(-FL*h);
-i = 1:numel(v) * nc;
-rows(a+i) = repmat(r, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(r), 1));
-cols(a+i) = repmat(c, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(c), 1));
-vals(a+i) = repmat(v, nc, 1);
-
+if par.bc(dim) == 0 % periodic B.C.
+    i = 1:numel(v) * nc;
+    rows(a+i) = repmat(r, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(r), 1));
+    cols(a+i) = repmat(c, nc, 1) + kron((0:nc - 1)'*nl, ones(numel(c), 1));
+    vals(a+i) = repmat(v, nc, 1);
+elseif par.bc(dim) == 1 % Dirichlet B.C.
+    m = multi_index(par.nx);
+    m = m(m(:, dim) > 1, :);
+    ni = size(m, 1);
+    i = 1:numel(v) * ni;
+    j = m2i(m, par.nx, 1);
+    rows(a+i) = repmat(r, ni, 1) + kron((j - 1)*nl, ones(numel(r), 1));
+    cols(a+i) = repmat(c, ni, 1) + kron((j - 1)*nl, ones(numel(c), 1));
+    vals(a+i) = repmat(v, ni, 1);
+end
 
 %========================================================================
 % Finalize sparse matrix

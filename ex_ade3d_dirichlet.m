@@ -14,16 +14,16 @@ prob = struct( ...
     'name', '3D Accuracy Test', ... % name of example
     'ax', [-L, L, -L, L, -L, L], ... % spatial domain
     'fn_ic', @fn_ic, ... % initial condition
+    'fn_bc', @fn_bc, ... % boundary condition
     'fn_exact', @fn_exact, ... % exact solution
     'advection', [0.5, 0.5, 0.5], ... % advection coefficients
     'diffusion', [0.05, -0.01, 0.01; 0.01, 0.06, 0.01;0.01, 0.01, 0.07], ... % diffusion coefficients
     'wavelen', [pi / L, pi / L, pi / L], ... % wave length
-    'amplitude', [0, 1], ... % amplitude
-    'bc', [0, 0, 0], ... % boundary condition
-    'nx', {[8, 8, 8], [16, 16, 16], [32, 32, 32], [64, 64, 64]}, ... % number of grid cells in each dimension
+    'bc', [1, 1, 1], ... % boundary condition
+    'nx', {[4, 3, 2], [8, 6, 4], [16, 12, 8], [32, 24, 16]}, ... % number of grid cells in each dimension
     'cfl', 0.5, ... % CFL number
-    'ord_t', 2, ... % temporal order
-    'ord_x', 2, ... % spatial order
+    'ord_t', 3, ... % temporal order
+    'ord_x', 3, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
     'adv_flx', [1, 1, 1], ... % advection flux type
@@ -64,24 +64,32 @@ disp(error_table);
 % Problem Specific Functions
 %========================================================================
 function f = fn_ic(par, x)
-z = par.wavelen(1) * x{1} + par.wavelen(2) * x{2} + par.wavelen(3) * x{3};
-f = par.amplitude(1) * cos(z) + par.amplitude(2) * sin(z);
+f = fn_exact(par, x, 0);
+end
+
+function f = fn_bc(par, x, t)
+f = fn_exact(par, x, t);
 end
 
 function f = fn_exact(par, x, t)
-z = par.wavelen(1) * (x{1} - par.advection(1) * t) + ...
-    par.wavelen(2) * (x{2} - par.advection(2) * t) + ...
-    par.wavelen(3) * (x{3} - par.advection(3) * t);
-f = exp(-par.lambda*t) * (par.amplitude(1) * cos(z) + ...
-    par.amplitude(2) * sin(z));
+y1 = x{1} - par.advection(1) * t;
+y2 = x{2} - par.advection(2) * t;
+y3 = x{3} - par.advection(3) * t;
+z1 = par.wavelen(1) * y1;
+z2 = par.wavelen(2) * y2;
+z3 = par.wavelen(3) * y3;
+f = exp(-par.lambda*t) * sin(z1 + z2 + z3);
 end
+
 
 function output(par, x, U, step)
 % Plotting routine, showing the 3D results and a 1D cross-section.
-t = par.t_plot(step); % Time of output.
+t = par.t_plot(step); % Time of output]7
 X = cell(1, par.dim);
 [X{:}] = ndgrid(x{:});
 Ue = par.fn_exact(par, X, t);
+U = permute(U, [2, 1, 3]); 
+Ue = permute(Ue, [2, 1, 3]);
 xslice = 0;
 yslice = 0;
 zslice = 0; % Slice locations.

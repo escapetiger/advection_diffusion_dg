@@ -38,7 +38,7 @@ M = dg.v_u_vol; % Mass matrix for volume
 m = multi_index(par.nx);
 X = cell(1, par.dim);
 for d = 1:par.dim
-    X{d} = x{d}(m(:, d)) + xq(d, :)' * hx(d);
+    X{d} = reshape(x{d}(m(:, d)), 1, []) + xq(d, :)' * hx(d);
 end
 
 %========================================================================

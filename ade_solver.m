@@ -55,7 +55,11 @@ cputime(1) = cputime(1) + toc;
 % diffusion matrix
 tic
 fprintf("Assembling diffusion matrix...\n");
-mat_dfn = assemble_diffusion(par, dg, x, hx);
+if any(par.bc > 0)
+    [mat_dfn, mat_dfn_aux] = assemble_diffusion(par, dg, x, hx);
+else
+    [mat_dfn, ~] = assemble_diffusion(par, dg, x, hx);
+end
 
 switch par.ord_t
     case 1
@@ -102,14 +106,32 @@ while t < par.tfinal && step_count < nt
     switch par.ord_t
         case 1
             U0 = U;
-            U = spsolve(A, U0, struct('is_spd', is_spd));
+            b = U0;
+            if any(par.bc > 0)
+                b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                b = b + ht * (b0 - b1);
+            end
+            U = spsolve(A, b, struct('is_spd', is_spd));
         case 2
             if step_count == 0
                 U0 = U;
-                U = spsolve(A1, U0, struct('is_spd', is_spd));
+                b = U0;
+                if any(par.bc > 0)
+                    b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                    b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                    b = b + ht * (b0 - b1);
+                end
+                U = spsolve(A1, b, struct('is_spd', is_spd));
                 U1 = U;
             else                
-                U = spsolve(A2, -U0 + 4 * U1, struct('is_spd', is_spd));
+                b = -U0 + 4 * U1;
+                if any(par.bc > 0)
+                    b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                    b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                    b = b + 2 * ht * (b0 - b1);
+                end
+                U = spsolve(A2, b, struct('is_spd', is_spd));
                 U0 = U1;
                 U1 = U;
             end
@@ -119,13 +141,31 @@ while t < par.tfinal && step_count < nt
             % when using hyperbolic time step.
             if step_count == 0
                 U0 = U;
-                U = spsolve(A1, U0, struct('is_spd', is_spd));
+                b = U0;
+                if any(par.bc > 0)
+                    b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                    b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                    b = b + ht * (b0 - b1);
+                end
+                U = spsolve(A1, b, struct('is_spd', is_spd));
                 U1 = U;
             elseif step_count == 1
-                U = spsolve(A2, -U0 + 4 * U1, struct('is_spd', is_spd));
+                b = -U0 + 4 * U1;
+                if any(par.bc > 0)
+                    b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                    b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                    b = b + 2 * ht * (b0 - b1);
+                end
+                U = spsolve(A2, b, struct('is_spd', is_spd));
                 U2 = U;
             else
-                U = spsolve(A3, 2 * U0 - 9 * U1 + 18 * U2, struct('is_spd', is_spd));
+                b = 2 * U0 - 9 * U1 + 18 * U2;
+                if any(par.bc > 0)
+                    b0 = impose_bc_diffusion(par, dg, x, hx, t, mat_dfn_aux, g);
+                    b1 = impose_bc_advection(par, dg, x, hx, t, g);
+                    b = b + 6 * ht * (b0 - b1);
+                end
+                U = spsolve(A3, b, struct('is_spd', is_spd));
                 U0 = U1;
                 U1 = U2;
                 U2 = U;
