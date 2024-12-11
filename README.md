@@ -3,7 +3,7 @@ This repository shows examples for solving linear advection-diffusion equation b
 
 Currently, codes for numerical examples with periodic and Dirichlet boundary conditions are fully optimized via vectorization.
 
-Semi-Lagrangian algorithms are going on.
+Diagonal implicit Runge-Kutta algorithms are g
 
 ---
 
