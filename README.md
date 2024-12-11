@@ -1,7 +1,7 @@
 # AdvectionDiffusionDG
 This repository shows examples for solving linear advection-diffusion equation by the implicit DG method. 
 
-Currently, codes for numerical examples with periodic and Dirichlet boundary conditions are fully optimized via vectorization.
+Numerical examples with periodic and Dirichlet boundary conditions are fully optimized via vectorization on the uniform grids.
 
 Multi-step methods are used in time discretization. The diffusion term is discretized by local DG method. The advection term is discretized by either upwind Eulerian method or Semi-Lagrangian method.
 
