@@ -3,7 +3,9 @@ This repository shows examples for solving linear advection-diffusion equation b
 
 Currently, codes for numerical examples with periodic and Dirichlet boundary conditions are fully optimized via vectorization.
 
-Diagonal implicit Runge-Kutta algorithms are g
+Multi-step methods are used in time discretization. The diffusion term is discretized by local DG method. The advection term is discretized by either upwind Eulerian method or Semi-Lagrangian method.
+
+Diagonal implicit Runge-Kutta algorithms are going on.
 
 ---
 
