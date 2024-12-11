@@ -1,4 +1,4 @@
-function res = evaluate_error(par, dg, u, x, hx, t)
+function res = evaluate_error(par, ref, u, x, hx, t)
 %EVALUATE_ERROR
 %   Compute the L1, L2, and Linf error norms for a DG solution.
 
@@ -6,11 +6,10 @@ function res = evaluate_error(par, dg, u, x, hx, t)
 % Parse parameters
 %========================================================================
 nc = prod(par.nx);   % Total number of cells
-nl = dg.n_dofs;      % Local degrees of freedom
-nr = dg.nr;          % Number of evaluation points
-xr = dg.xr;          % Reference points for evaluation
-wr = dg.wr;          % Weights for integration
-vr = dg.vr;          % Evaluation matrix
+nl = ref.n_dofs;      % Local degrees of freedom
+xr = ref.xr;          % Reference points for evaluation
+wr = ref.wr;          % Weights for integration
+vr = ref.vr;          % Evaluation matrix
 h = prod(hx);        % Cell volume
 
 %========================================================================

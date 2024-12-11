@@ -16,17 +16,18 @@ prob = struct( ...
     'fn_ic', @fn_ic, ... % initial condition
     'fn_bc', @fn_bc, ... % boundary condition
     'fn_exact', @fn_exact, ... % exact solution
-    'advection', 0.5, ... % advection coefficients
+    'advection', 0.3, ... % advection coefficients
     'diffusion', 0.1, ... % diffusion coefficients
     'wavelen', pi/L, ... % wave length
     'amplitude', 1, ... % amplitude
     'bc', 1, ... % boundary condition
-    'nx', {8, 16, 32, 64, 128, 256}, ... % number of grid cells in each dimension
-    'cfl', 0.3, ... % CFL number
-    'ord_t', 2, ... % temporal order
-    'ord_x', 2, ... % spatial order
+    'nx', {8, 16, 32, 64, 128}, ... % number of grid cells in each dimension
+    'cfl', 1.5, ... % CFL number
+    'ord_t', 3, ... % temporal order
+    'ord_x', 3, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', 1, ... % advection flux type
     'dfn_flx1', 2, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 1, ... % diffusion flux type for prime variable
@@ -75,7 +76,7 @@ end
 function f = fn_exact(par, x, t)
 y = x{1} - par.advection * t;
 z = par.wavelen * y;
-f = exp(-par.lambda*t) * par.amplitude * sin(z);
+f = exp(-par.lambda*t) * par.amplitude .* sin(z);
 end
 
 function output(par, x, U, step)

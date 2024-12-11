@@ -1,4 +1,4 @@
-function res = evaluate(par, dg, u)
+function res = evaluate(par, ref, u)
 %EVALUATE
 %   Evaluate DG solution values at prescribed points.
 
@@ -6,9 +6,9 @@ function res = evaluate(par, dg, u)
 % Parse parameters
 %========================================================================
 nc = prod(par.nx);    % Total number of cells
-nl = dg.n_dofs;       % Number of local degrees of freedom
-np = dg.np;           % Number of points per cell
-vp = dg.vp;           % Interpolation matrix (np x nl)
+nl = ref.n_dofs;       % Number of local degrees of freedom
+np = ref.np;           % Number of points per cell
+vp = ref.vp;           % Interpolation matrix (np x nl)
 sz = size(u);         % Size of input solution
 nb = sz(2:end);       % Additional dimensions beyond the first
 

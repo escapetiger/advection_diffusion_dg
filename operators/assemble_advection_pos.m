@@ -1,4 +1,4 @@
-function res = assemble_advection_pos(par, dg, dim, hx)
+function res = assemble_advection_pos(par, ref, dim, hx)
 %ASSEMBLE_ADVECTION_POS Assemble advection matrix using positive flux 
 % along a dimension.
 %
@@ -6,16 +6,16 @@ function res = assemble_advection_pos(par, dg, dim, hx)
 %   the specified spatial dimension.
 %
 %   Syntax:
-%      res = assemble_advection_pos(par, dg, dim, hx)
+%      res = assemble_advection_pos(par, ref, dim, hx)
 %
 %   Inputs:
 %      par - Parameters structure.
-%      dg  - DG structure.
+%      ref - Reference structure.
 %      dim - Spatial dimension along which to compute the gradient.
 %      hx  - Mesh size.
 %
 %   Outputs:
-%      res - Sparse gradient matrix for positive flux along the specified dimension.
+%      res - Sparse matrix.
 %
 %   Author: Yi Cai
 %   Date: 2024-11-25
@@ -25,12 +25,12 @@ function res = assemble_advection_pos(par, dg, dim, hx)
 % Parse parameters
 %========================================================================
 nc = prod(par.nx); % Total number of cells
-nl = dg.n_dofs; % Number of local degrees of freedom per cell
+nl = ref.n_dofs; % Number of local degrees of freedom per cell
 ng = nl * nc; % Total number of global degrees of freedom
-M = dg.v_u_vol; % Mass matrix
-V = M \ dg.dv_u_vol{dim}; % Volume terms
-FL = M \ dg.dv_u_flx_i{2*dim-1}; % Left flux terms
-FR = M \ dg.dv_u_flx_o{2*dim}; % Right flux terms
+M = ref.v_u_vol; % Mass matrix
+V = M \ ref.dv_u_vol{dim}; % Volume terms
+FL = M \ ref.dv_u_flx_i{2*dim-1}; % Left flux terms
+FR = M \ ref.dv_u_flx_o{2*dim}; % Right flux terms
 h = 1 / hx(dim); % flux size
 
 %========================================================================

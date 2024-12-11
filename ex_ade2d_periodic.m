@@ -20,12 +20,13 @@ prob = struct( ...
     'wavelen', [pi / L, pi / L], ... % wave length
     'amplitude', [0, 1], ... % amplitude
     'bc', [0, 0], ... % boundary condition
-    'nx', {[8, 8], [16, 16], [32, 32], [64, 64]}, ... % number of grid cells in each dimension
-    'cfl', 0.5, ... % CFL number
+    'nx', {[8, 4], [16, 8], [32, 16], [64, 32]}, ... % number of grid cells in each dimension
+    'cfl', 1.5, ... % CFL number
     'ord_t', 2, ... % temporal order
     'ord_x', 2, ... % spatial order
-    'poly_t', 'Q', ... % polynomial type
-    'basis_t', 2, ... % basis type
+    'poly_t', 'P', ... % polynomial type
+    'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', [1, 1], ... % advection flux type
     'dfn_flx1', 1, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 2, ... % diffusion flux type for primal variable
@@ -78,8 +79,8 @@ end
 function output(par, x, U, step)
 t = par.t_plot(step);
 
-clf, subplot(1, 3, 1:2);
-imagesc(x{1}, x{2}, U);
+clf, subplot(2, 3, 1:2);
+imagesc(x{1}, x{2}, U');
 axis xy equal tight;
 xlim(par.ax(1:2)), xlabel('x');
 ylim(par.ax(3:4)), ylabel('y');
@@ -87,14 +88,22 @@ colormap jet(255); colorbar; caxis([-1 1]);
 title(sprintf('%s with DG-%d-%d at t = %0.2f', ...
     par.name, par.ord_t, par.ord_x, t));
 
-subplot(1, 3, 3);
+subplot(2, 3, 4:5);
 X = cell(1, par.dim);
 [X{:}] = ndgrid(x{:});
 Ue = par.fn_exact(par, X, t);
+imagesc(x{1}, x{2}, Ue');
+axis xy equal tight;
+xlim(par.ax(1:2)), xlabel('x');
+ylim(par.ax(3:4)), ylabel('y');
+colormap jet(255); colorbar; caxis([-1 1]);
+title(sprintf('Reference solution at t = %0.2f',t));
+
+subplot(2, 3, [3, 6]);
 r = linspace(min(x{1}), max(x{1}), 64);
-Uexy = interp2(x{1}, x{2}, Ue, r/sqrt(2), r/sqrt(2));
-Uxy = interp2(x{1}, x{2}, U, r/sqrt(2), r/sqrt(2));
+Uexy = interp2(x{1}, x{2}, Ue', r/sqrt(2), r/sqrt(2));
 plot(r, Uexy, 're', 'DisplayName', 'Ref');
+Uxy = interp2(x{1}, x{2}, U', r/sqrt(2), r/sqrt(2));
 hold on;
 plot(r, Uxy, 'bo', 'DisplayName', 'DG');
 hold off;
@@ -103,3 +112,4 @@ legend('Location', 'SouthEast');
 title('Cut at x = y');
 drawnow;
 end
+

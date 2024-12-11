@@ -21,11 +21,12 @@ prob = struct( ...
     'wavelen', [pi / L, pi / L, pi / L], ... % wave length
     'bc', [1, 1, 1], ... % boundary condition
     'nx', {[4, 3, 2], [8, 6, 4], [16, 12, 8], [32, 24, 16]}, ... % number of grid cells in each dimension
-    'cfl', 0.5, ... % CFL number
+    'cfl', 2.5, ... % CFL number
     'ord_t', 3, ... % temporal order
     'ord_x', 3, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', [1, 1, 1], ... % advection flux type
     'dfn_flx1', 2, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 1, ... % diffusion flux type for primal variable
@@ -78,7 +79,7 @@ y3 = x{3} - par.advection(3) * t;
 z1 = par.wavelen(1) * y1;
 z2 = par.wavelen(2) * y2;
 z3 = par.wavelen(3) * y3;
-f = exp(-par.lambda*t) * sin(z1 + z2 + z3);
+f = exp(-par.lambda*t) .* sin(z1 + z2 + z3);
 end
 
 

@@ -1,15 +1,15 @@
-function res = impose_ic(par, dg, x, hx)
+function res = impose_ic(par, ref, x, hx)
 %IMPOSE_IC Impose initial condition for DG simulation.
 %
 %   This function computes the initial condition for a DG method using
 %   projection onto the basis functions.
 %
 %   Syntax:
-%      res = impose_ic(par, dg, x, hx)
+%      res = impose_ic(par, ref, x, hx)
 %
 %   Inputs:
 %      par - Parameters structure.
-%      dg  - DG structure.
+%      ref  - DG structure.
 %      x   - Cell array of grid points in each dimension.
 %      hx  - Grid spacing in each dimension.
 %
@@ -24,13 +24,13 @@ function res = impose_ic(par, dg, x, hx)
 % Parse parameters
 %========================================================================
 nc = prod(par.nx); % Total number of cells
-nl = dg.n_dofs; % Number of local degrees of freedom
+nl = ref.n_dofs; % Number of local degrees of freedom
 ng = nl * nc; % Total number of global degrees of freedom
-nq = dg.nq_vol; % Number of quadrature points per cell
-xq = dg.xq_vol; % Quadrature points (reference)
-wq = dg.wq_vol; % Quadrature weights (reference)
-vq = dg.vq_vol; % Basis function values at quadrature points
-M = dg.v_u_vol; % Mass matrix for volume
+nq = ref.nq_vol; % Number of quadrature points per cell
+xq = ref.xq_vol; % Quadrature points (reference)
+wq = ref.wq_vol; % Quadrature weights (reference)
+vq = ref.vq_vol; % Basis function values at quadrature points
+M = ref.v_u_vol; % Mass matrix for volume
 
 %========================================================================
 % Points to evaluate

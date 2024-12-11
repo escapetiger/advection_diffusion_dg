@@ -1,8 +1,8 @@
-function [data] = setup_dg(dim, order, basis_t, poly_t, n_plot, n_error)
-%SETUP_DG Set static data for the Discontinuous Galerkin (DG) method.
+function data = setup_dg(data, dim, order, basis_t, poly_t, n_plot, n_error)
+%SETUP_DG Set static data for the DG method.
 %   This function prepares static data structures required for the
 %   Discontinuous Galerkin (DG) method, including quadrature points,
-%   weights, basis functions, and derivative matrices.
+%   weights, pointwise values, and local reference matrices.
 %
 %   Syntax:
 %      data = SETUP_DG(dim, order, basis, poly_t)
@@ -165,7 +165,6 @@ if n_error > 0
 end
 
 % Assemble data structure
-data = struct;
 data.n_dofs = n_dofs;
 data.nq_vol = nq_vol;
 data.xq_vol = xq_vol;

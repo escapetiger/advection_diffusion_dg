@@ -1,4 +1,4 @@
-function res = impose_bc_diffusion(par, dg, x, hx, t, mat_aux, vec_bdr)
+function res = impose_bc_diffusion(par, ref, x, hx, t, vec_bdr, mat_aux)
 %IMPOSE_BC_DIFFUSION
 %   Impose boundary condition for diffusion terms.
 
@@ -6,7 +6,7 @@ function res = impose_bc_diffusion(par, dg, x, hx, t, mat_aux, vec_bdr)
 % Parse parameters and initialize variables
 %========================================================================
 nc = prod(par.nx); % Total number of cells
-nl = dg.n_dofs; % Number of local DOFs per cell
+nl = ref.n_dofs; % Number of local DOFs per cell
 ng = nl * nc; % Total number of global DOFs
 
 %========================================================================

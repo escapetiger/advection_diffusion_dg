@@ -20,12 +20,13 @@ prob = struct( ...
     'wavelen', [pi / L, pi / L, pi / L], ... % wave length
     'amplitude', [0, 1], ... % amplitude
     'bc', [0, 0, 0], ... % boundary condition
-    'nx', {[32, 32, 32]}, ... % number of grid cells in each dimension
-    'cfl', 0.5, ... % CFL number
-    'ord_t', 1, ... % temporal order
-    'ord_x', 1, ... % spatial order
+    'nx', {[4, 4, 4], [8, 8, 8], [16, 16, 16], [32, 32, 32]}, ... % number of grid cells in each dimension
+    'cfl', 1.5, ... % CFL number
+    'ord_t', 2, ... % temporal order
+    'ord_x', 2, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', [1, 1, 1], ... % advection flux type
     'dfn_flx1', 2, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 1, ... % diffusion flux type for primal variable
@@ -72,8 +73,8 @@ function f = fn_exact(par, x, t)
 z = par.wavelen(1) * (x{1} - par.advection(1) * t) + ...
     par.wavelen(2) * (x{2} - par.advection(2) * t) + ...
     par.wavelen(3) * (x{3} - par.advection(3) * t);
-f = exp(-par.lambda*t) * (par.amplitude(1) * cos(z) + ...
-    par.amplitude(2) * sin(z));
+f = exp(-par.lambda*t) .* (par.amplitude(1) .* cos(z) + ...
+    par.amplitude(2) .* sin(z));
 end
 
 function output(par, x, U, step)
@@ -82,6 +83,8 @@ t = par.t_plot(step); % Time of output.
 X = cell(1, par.dim);
 [X{:}] = ndgrid(x{:});
 Ue = par.fn_exact(par, X, t);
+U = permute(U, [2, 1, 3]); 
+Ue = permute(Ue, [2, 1, 3]);
 xslice = 0;
 yslice = 0;
 zslice = 0; % Slice locations.
@@ -96,8 +99,8 @@ colormap jet(255); colorbar;
 subplot(1, 3, 3);
 r = linspace(min(x{1}), max(x{1}), 64);
 % 1D cross sections
-Uexyz = interp3(x{1}, x{2}, x{3}, Ue', r/sqrt(3), r/sqrt(3), r/sqrt(3));
-Uxyz = interp3(x{1}, x{2}, x{3}, U', r/sqrt(3), r/sqrt(3), r/sqrt(3));
+Uexyz = interp3(x{1}, x{2}, x{3}, Ue, r/sqrt(3), r/sqrt(3), r/sqrt(3));
+Uxyz = interp3(x{1}, x{2}, x{3}, U, r/sqrt(3), r/sqrt(3), r/sqrt(3));
 % Plot 1D cross sections.
 plot(r, Uexyz, 're', 'DisplayName', 'Ref');
 hold on;

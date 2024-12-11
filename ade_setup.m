@@ -63,6 +63,13 @@ if isfield(prob, 'wavelen')
     end
 end
 
+if isfield(prob, 'advection')
+    if length(prob.wavelen) ~= par.dim
+        error('Invalid wave lengths.');
+    end
+    par.advection = reshape(prob.advection, par.dim, 1);
+end
+
 if isfield(prob, 'diffusion')
     if any(size(prob.diffusion) ~= par.dim)
         error('Invalid diffusion coefficients.');

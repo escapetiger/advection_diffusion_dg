@@ -1,3 +1,8 @@
+%EX_ADE2D_DIRICHELET 
+%   Pure diffusion: passed
+%   Pure advection: DG1 passed, but DG2 and DG3 failed
+%   Mixed: DG1 passed, but DG2 and DG3 failed
+
 %========================================================================
 % Environment
 %========================================================================
@@ -21,11 +26,12 @@ prob = struct( ...
     'wavelen', [pi / L, pi / L], ... % wave length
     'bc', [1, 1], ... % boundary condition
     'nx', {[4, 2], [8, 4], [16, 8], [32, 16]}, ... % number of grid cells in each dimension
-    'cfl', 1.0, ... % CFL number
+    'cfl', 1.5, ... % CFL number
     'ord_t', 2, ... % temporal order
     'ord_x', 2, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', [1, 1], ... % advection flux type
     'dfn_flx1', 2, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 1, ... % diffusion flux type for primal variable
@@ -76,7 +82,7 @@ y1 = x{1} - par.advection(1) * t;
 y2 = x{2} - par.advection(2) * t;
 z1 = par.wavelen(1) * y1;
 z2 = par.wavelen(2) * y2;
-f = exp(-par.lambda*t) * sin(z1 + z2);
+f = exp(-par.lambda*t) .* sin(z1 + z2);
 end
 
 function output(par, x, U, step)

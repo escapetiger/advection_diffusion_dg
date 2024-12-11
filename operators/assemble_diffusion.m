@@ -1,11 +1,11 @@
-function [D, A1, A2] = assemble_diffusion(par, dg, x, hx)
+function [D, A1, A2] = assemble_diffusion(par, ref, x, hx)
 %ASSEMBLE_DIFFUSION
 %   Assemble linear diffusion matrix using local DG method.
 
 %========================================================================
 % Parse parameters
 %========================================================================
-ng = dg.n_dofs * prod(par.nx);
+ng = ref.n_dofs * prod(par.nx);
 
 %========================================================================
 % Assemble functions
@@ -35,9 +35,9 @@ assemble_pri_fn = { ...
 %========================================================================
 A1 = cell(1, par.dim);
 for d = 1:par.dim
-    A1{d} = assemble_aux_fn{par.dfn_flx1}(par, dg, d, hx);
+    A1{d} = assemble_aux_fn{par.dfn_flx1}(par, ref, d, hx);
     if par.bc(d) == 1
-        A1_ext = assemble_aux_bdr_ext_fn{par.dfn_flx1}(par, dg, d, hx);
+        A1_ext = assemble_aux_bdr_ext_fn{par.dfn_flx1}(par, ref, d, hx);
         A1{d} = A1{d} + A1_ext;
     end
 end
@@ -45,13 +45,13 @@ end
 B1 = cell(1, par.dim);
 for d = 1:par.dim
     if par.bc(d) == 1
-        B1{d} = assemble_aux_bdr_jmp_fn{par.dfn_flx1}(par, dg, d, hx);
+        B1{d} = assemble_aux_bdr_jmp_fn{par.dfn_flx1}(par, ref, d, hx);
     end
 end
 
 A2 = cell(1, par.dim);
 for d = 1:par.dim
-    A2{d} = assemble_pri_fn{par.dfn_flx2}(par, dg, d, hx);
+    A2{d} = assemble_pri_fn{par.dfn_flx2}(par, ref, d, hx);
 end
 
 D = sparse(ng, ng);
@@ -77,6 +77,11 @@ for d1 = 1:par.dim
             end
         end
     end
+end
+
+if all(par.bc == 0)
+    A1 = [];
+    A2 = [];
 end
 
 end

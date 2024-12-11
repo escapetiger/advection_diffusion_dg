@@ -16,16 +16,17 @@ prob = struct( ...
     'fn_ic', @fn_ic, ... % initial condition
     'fn_exact', @fn_exact, ... % exact solution
     'advection', 0.3, ... % advection coefficients
-    'diffusion', 0, ... % diffusion coefficients
+    'diffusion', 0.5, ... % diffusion coefficients
     'wavelen', pi/L, ... % wave length
     'amplitude', [0, 1], ... % amplitude
     'bc', 0, ... % boundary condition
     'nx', {8, 16, 32, 64, 128}, ... % number of grid cells in each dimension
-    'cfl', 0.5, ... % CFL number
+    'cfl', 1.5, ... % CFL number
     'ord_t', 2, ... % temporal order
     'ord_x', 2, ... % spatial order
     'poly_t', 'P', ... % polynomial type
     'basis_t', 1, ... % basis type
+    'adv_t', 2, ... % advection type: 1 - Eulerian; 2 - Semi-Lagrangian
     'adv_flx', 1, ... % advection flux type
     'dfn_flx1', 3, ... % diffusion flux type for auxiliary variable
     'dfn_flx2', 3, ... % diffusion flux type for primal variable
